@@ -1,11 +1,12 @@
 import { getToken, setToken, removeToken } from '@/utils/auth'
-import { login } from '@/api/user'
+import { login, getUserInfo } from '@/api/user'
 // 状态
 const state = {
   // 状态
   // 初始化的时候从缓存读取状态，并赋值到初始化的状态上
   // Vuex的的持久化如何实现？ Vuex和前端缓存相结合
-  token: getToken() // 设置token初始状态 Token持久化 =>放到缓存中
+  token: getToken(), // 设置token初始状态 Token持久化 =>放到缓存中
+  userInfo: {} // 定义一个空对象 不是null
 }
 // 修改状态
 const mutations = {
@@ -19,6 +20,14 @@ const mutations = {
   removeToken(state) {
     state.token = null // 删除vuex的token
     removeToken() // 先清除vuex 再清楚缓存vuex和缓存数据的同步
+  },
+  // 设置用户信息
+  setUserInfo(state, userInfo) {
+    state.userInfo = { ...userInfo } // 用浅拷贝的方式去赋值对象，这样数据更新的时候，才会触发组件的更新
+  },
+  // 删除用户信息
+  removeUserInfo(state) {
+    state.userInfo = {}
   }
 }
 // 执行异步
@@ -32,6 +41,11 @@ const actions = {
     // actions 修改state 必须通过mutations
     context.commit('setToken', result)
     // }
+  },
+  async getUserInfo(context) {
+    const result = await getUserInfo() // 获取返回值
+    context.commit('setUserInfo', result) // 将个人信息设置到用户的vuex数据中
+    return result
   }
 }
 export default {
