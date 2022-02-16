@@ -67,8 +67,6 @@
 </template>
 
 <script>
-import { login } from '../../api/user'
-
 export default {
   name: 'Login',
   data() {
@@ -126,13 +124,25 @@ export default {
       })
     },
     handleLogin() {
-      this.$refs.loginForm.validate((valid) => {
+      this.$refs.loginForm.validate(async(valid) => {
         if (valid) {
-          login(this.loginForm).then((res) => {
-            console.log('res:', res)
-          })
+          // 校验通过 格式正确
+          // 触发 action
+          await this.$store.dispatch('user/login', this.loginForm)
+          // 走到这里
+          if (this.redirect) {
+            this.$router.push({
+              path: this.redirect
+            })
+          } else {
+            this.$router.push({
+              path: '/'
+            })
+          }
         } else {
-          console.log('error submit!!')
+          // 校验失败
+          // console.log('error submit!!')
+          this.$message.error('数据格式有误,请检查哦!')
           return false
         }
       })

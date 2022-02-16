@@ -30,7 +30,7 @@ const actions = {
     // 表示登录接口调用成功
     // 现有用户token
     // actions 修改state 必须通过mutations
-    context.commit('setToken', result.data.data)
+    context.commit('setToken', result)
     // }
   }
 }
