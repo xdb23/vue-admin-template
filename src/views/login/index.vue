@@ -129,6 +129,7 @@ export default {
           // 校验通过 格式正确
           // 触发 action
           await this.$store.dispatch('user/login', this.loginForm)
+          this.$message.success('登录成功')
           // 走到这里
           if (this.redirect) {
             this.$router.push({
