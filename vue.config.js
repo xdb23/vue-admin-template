@@ -30,6 +30,12 @@ module.exports = {
   lintOnSave: process.env.NODE_ENV === 'development',
   productionSourceMap: false,
   devServer: {
+    proxy: {
+      '/api': {
+        target: 'http://ihrm.itheima.net/',
+        changeOrigin: true
+      }
+    },
     port: port,
     open: true,
     overlay: {

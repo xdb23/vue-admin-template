@@ -38,7 +38,7 @@
           ref="password"
           v-model="loginForm.password"
           :type="passwordType"
-          placeholder="请输入验证码"
+          placeholder="请输入密码"
           name="password"
           tabindex="2"
           auto-complete="on"
@@ -67,6 +67,8 @@
 </template>
 
 <script>
+import { login } from '../../api/user'
+
 export default {
   name: 'Login',
   data() {
@@ -76,8 +78,28 @@ export default {
         password: '123456'
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur' }],
-        password: [{ required: true, trigger: 'blur' }]
+        mobile: [
+          { required: true, trigger: 'blur', message: '手机号不能为空' },
+          {
+            pattern:
+              /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/,
+            trigger: 'blur',
+            message: '手机号格式有误'
+          }
+        ],
+        password: [
+          {
+            required: true,
+            trigger: 'blur',
+            message: '密码不能为空'
+          },
+          {
+            min: 6,
+            max: 16,
+            trigger: 'blur',
+            message: '密码的长度在6-16位之间'
+          }
+        ]
       },
       loading: false,
       passwordType: 'password',
@@ -106,16 +128,9 @@ export default {
     handleLogin() {
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
-          this.loading = true
-          this.$store
-            .dispatch('user/login', this.loginForm)
-            .then(() => {
-              this.$router.push({ path: this.redirect || '/' })
-              this.loading = false
-            })
-            .catch(() => {
-              this.loading = false
-            })
+          login(this.loginForm).then((res) => {
+            console.log('res:', res)
+          })
         } else {
           console.log('error submit!!')
           return false
@@ -201,6 +216,7 @@ $light_gray: #eee;
     font-size: 14px;
     color: #fff;
     margin-bottom: 10px;
+    text-align: center;
 
     span {
       &:first-of-type {
