@@ -15,4 +15,9 @@ export function getUserInfo() {
   })
 }
 
-export function logout() {}
+export function getMoreInfo(id) {
+  return request({
+    url: `/sys/user/${id}`,
+    method: 'get'
+  })
+}

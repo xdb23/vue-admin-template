@@ -16,8 +16,12 @@
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
           <!-- 头像 -->
-          <img src="../../assets/common/head.jpg" class="user-avatar">
-          <span>管理员</span>
+          <img
+            v-errplus="require('@/assets/common/xiaoji.gif')"
+            :src="userInfo && userInfo.staffPhoto"
+            class="user-avatar"
+          >
+          <span>{{ userInfo && userInfo.username }}</span>
           <i class="el-icon-arrow-down" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
@@ -44,24 +48,43 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import Breadcrumb from '@/components/Breadcrumb'
+// import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 
 export default {
   components: {
-    Breadcrumb,
+    // Breadcrumb,
     Hamburger
   },
+  // created() {
+  //   this.$store.dispatch('user/getUserInfo')
+  // },
   computed: {
-    ...mapGetters(['sidebar', 'avatar'])
+    ...mapGetters(['sidebar', 'userInfo'])
   },
   methods: {
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },
-    async logout() {
-      await this.$store.dispatch('user/logout')
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    logout() {
+      this.$confirm('此操作将退出登录, 是否继续?', '友情提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async() => {
+        await this.$store.dispatch('user/logout')
+        this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+        this.$message({
+          type: 'success',
+          message: '退出成功!'
+        })
+      })
+      // .catch((err) => {
+      //   this.$message({
+      //     type: 'warning',
+      //     message: '已取消操作'
+      //   })
+      // })
     }
   }
 }

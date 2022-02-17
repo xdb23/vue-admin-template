@@ -1,7 +1,10 @@
 // 导出一个axios的实例  而且这个实例要有请求拦截器 响应拦截器
+import router from '@/router'
 import store from '@/store'
 import axios from 'axios'
 import { Message } from 'element-ui'
+import { getTimeStamp } from './auth'
+const TimeOut = 3600
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API,
   timeout: 5000
@@ -9,9 +12,16 @@ const service = axios.create({
 service.interceptors.request.use(
   (config) => {
     // 定义一个变量，增加代码可读性
+
     const _token = store.getters.token
+    console.log('token:', _token)
     // 统一注入token
     if (_token) {
+      if (IsCheckTimeOut()) {
+        store.dispatch('user/logout')
+        router.push('/login')
+        return Promise.reject(new Error('token失效了'))
+      }
       // 如果token存在注入token
       config.headers.Authorization = `Bearer ${_token}`
     }
@@ -39,6 +49,12 @@ service.interceptors.response.use(
     return Promise.reject(error) // 返回执行错误 让当前的执行链
   }
 ) // 响应拦截器
+// 是否超时
+function IsCheckTimeOut() {
+  const currentTime = Date.now()
+  const timeStamp = getTimeStamp()
+  return (currentTime - timeStamp) / 1000 > TimeOut
+}
 export default service // 导出axios实例
 
 // import axios from 'axios'
